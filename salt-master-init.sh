@@ -106,9 +106,14 @@ saltmaster_bootstrap() {
     pgrep salt-master | sed /$$/d | xargs --no-run-if-empty -i{} $SUDO kill -9 {}
     pkill -9 salt-minion
     SCRIPTS=$(dirname $0)
-    test -e ${SCRIPTS}/salt-master-setup.sh || \
+    if [ ! -e ${SCRIPTS}/salt-master-setup.sh ]; then
+      if [ -n $SALT_MASTER_SETUP_SCRIPT ]; then
+        echo "$SALT_MASTER_SETUP_SCRIPT" > ${SCRIPTS}/salt-master-setup.sh
+      else
         curl -sL "https://raw.githubusercontent.com/salt-formulas/salt-formulas-scripts/master/salt-master-setup.sh" |$SUDO tee ${SCRIPTS}/salt-master-setup.sh > /dev/null;
-        $SUDO chmod +x *.sh;
+      fi
+      $SUDO chmod +x ${SCRIPTS}/*.sh;
+    fi
     test -e ${SCRIPTS}/.salt-master-setup.sh.passed || {
         export SALT_MASTER=localhost
         export MINION_ID=${MASTER_HOSTNAME}
