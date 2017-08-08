@@ -85,7 +85,14 @@ system_config() {
     echo "127.0.1.2  salt" | $SUDO tee -a /etc/hosts >/dev/null
 
     if [[ $BOOTSTRAP_SALTSTACK =~ ^(True|true|1|yes)$ ]]; then
+      if [ -n $BOOTSTRAP_SALT_SCRIPT ]; then
+        SCRIPTS=$(dirname $0)
+        [ -e ${SCRIPTS}/bootstrap_salt.sh ] || echo "$BOOTSTRAP_SALT_SCRIPT" > ${SCRIPTS}/bootstrap_salt.sh
+        chmod +x ${SCRIPTS}/*.sh
+        $SUDO ${SCRIPTS}/bootstrap_salt.sh -M ${BOOTSTRAP_SALTSTACK_OPTS}
+      else
         curl -L https://bootstrap.saltstack.com | $SUDO sh -s -- -M ${BOOTSTRAP_SALTSTACK_OPTS} &>/dev/null || true
+      fi
     fi
 
     which reclass || $SUDO apt install -qqq -y reclass

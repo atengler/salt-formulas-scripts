@@ -240,12 +240,27 @@ install_salt_master_pkg()
       debian)
           $SUDO apt-get install -y git
 	  which reclass || $SUDO apt install -qqq -y reclass
-          curl -L https://bootstrap.saltstack.com | $SUDO sh -s -- -M ${BOOTSTRAP_SALTSTACK_OPTS} &>/dev/null || true
+          if [ -n $BOOTSTRAP_SALT_SCRIPT ]; then
+            SCRIPTS=$(dirname $0)
+            [ -e ${SCRIPTS}/bootstrap_salt.sh ] || echo "$BOOTSTRAP_SALT_SCRIPT" > ${SCRIPTS}/bootstrap_salt.sh
+            chmod +x ${SCRIPTS}/*.sh
+            $SUDO ${SCRIPTS}/bootstrap_salt.sh -M ${BOOTSTRAP_SALTSTACK_OPTS} 
+          else
+            curl -L https://bootstrap.saltstack.com | $SUDO sh -s -- -M ${BOOTSTRAP_SALTSTACK_OPTS} &>/dev/null || true
+          fi
         ;;
       rhel)
           yum install -y git
           which reclass || $SUDO yum install -y reclass
-          curl -L https://bootstrap.saltstack.com | $SUDO sh -s -- -M ${BOOTSTRAP_SALTSTACK_OPTS} &>/dev/null || true
+          if [ -n $BOOTSTRAP_SALT_SCRIPT ]; then
+            SCRIPTS=$(dirname $0)
+            [ -e ${SCRIPTS}/bootstrap_salt.sh ] || echo "$BOOTSTRAP_SALT_SCRIPT" > ${SCRIPTS}/bootstrap_salt.sh
+            chmod +x ${SCRIPTS}/*.sh
+            $SUDO ${SCRIPTS}/bootstrap_salt.sh -M ${BOOTSTRAP_SALTSTACK_OPTS} 
+          else
+            curl -L https://bootstrap.saltstack.com | $SUDO sh -s -- -M ${BOOTSTRAP_SALTSTACK_OPTS} &>/dev/null || true
+          fi
+
         ;;
     esac
     
@@ -313,10 +328,24 @@ install_salt_minion_pkg()
 
     case $PLATFORM_FAMILY in
       debian)
-          curl -L https://bootstrap.saltstack.com | $SUDO sh -s -- ${BOOTSTRAP_SALTSTACK_OPTS} &>/dev/null || true
+          if [ -n $BOOTSTRAP_SALT_SCRIPT ]; then
+            SCRIPTS=$(dirname $0)
+            [ -e ${SCRIPTS}/bootstrap_salt.sh ] || echo "$BOOTSTRAP_SALT_SCRIPT" > ${SCRIPTS}/bootstrap_salt.sh
+            chmod +x ${SCRIPTS}/*.sh
+            $SUDO ${SCRIPTS}/bootstrap_salt.sh -M ${BOOTSTRAP_SALTSTACK_OPTS} 
+          else
+            curl -L https://bootstrap.saltstack.com | $SUDO sh -s -- -M ${BOOTSTRAP_SALTSTACK_OPTS} &>/dev/null || true
+          fi
       ;;
       rhel)
-          curl -L https://bootstrap.saltstack.com | $SUDO sh -s -- ${BOOTSTRAP_SALTSTACK_OPTS} &>/dev/null || true
+          if [ -n $BOOTSTRAP_SALT_SCRIPT ]; then
+            SCRIPTS=$(dirname $0)
+            [ -e ${SCRIPTS}/bootstrap_salt.sh ] || echo "$BOOTSTRAP_SALT_SCRIPT" > ${SCRIPTS}/bootstrap_salt.sh
+            chmod +x ${SCRIPTS}/*.sh
+            $SUDO ${SCRIPTS}/bootstrap_salt.sh -M ${BOOTSTRAP_SALTSTACK_OPTS} 
+          else
+            curl -L https://bootstrap.saltstack.com | $SUDO sh -s -- -M ${BOOTSTRAP_SALTSTACK_OPTS} &>/dev/null || true
+          fi
       ;;
     esac
 
